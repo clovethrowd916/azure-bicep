@@ -23,14 +23,14 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-03-01' = {
   }
 
   resource Infra_subnet 'subnets' = {
-    name: '${subnetPrefix[0]}-subnet'
+    name: '${subnetPrefix[0]}-SUBNET'
     properties: {
       addressPrefix: subnetAddressPrefix[0]
     }
   }
 
   resource Security_subnet 'subnets' = {
-    name: '${subnetPrefix[1]}-subnet'
+    name: '${subnetPrefix[1]}-SUBNET'
     properties: {
       addressPrefix: subnetAddressPrefix[1]
     }

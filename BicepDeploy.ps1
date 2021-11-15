@@ -2,4 +2,4 @@
 $hub_subscription = '1ba5c8d8-4d9e-453f-b8b3-4797d10e6697'
 
 Connect-AzAccount -Subscription $hub_subscription -Tenant $tenant
-New-AzResourceGroupDeployment -TemplateFile main.bicep -environmentType nonprod
+New-AzResourceGroupDeployment -TemplateFile 'vnet_test.bicep' -ResourceGroupName AZ-LAB-NETWORKING

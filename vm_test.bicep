@@ -1,14 +1,24 @@
 
 // Set variables and parameters
+
+
+param adminLogin string
+@secure()
+param adminPw string
+
 param vmName string
+
 var location = resourceGroup().location
 var nicName = '${vmName}-NIC'
 var nicIpConfigName = '${nicName}-ipconfig'
-var subnet_id  = resourceId('Microsoft.Network/virtualNetworks/subnets', 'INFRA-SUBNET')
+param subnet_id string  = resourceId('AZ-LAB-NETWORKING','Microsoft.Network/virtualNetworks/subnets', 'HUB-NET', 'INFRA-SUBNET')
+var vm_size = 'Standard_B2ms'
+var os_disk_type = 'StandardSSD_LRS'
+var os_version = '2019-Datacenter'
 
 
 
-//Set Admin Creds for VM
+/*Set Admin Creds for VM
 resource sc_kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
   name: 'azlab-kv-SC'
 
@@ -23,17 +33,9 @@ resource sc_kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
   }
 
 }
-
-
-
+*/
 // Bring in VNet Details
-resource hub_vnet 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
-  name: 'HUB-NET'
 
-  resource infra_subnet 'subnets' existing = {
-    name: 'INFRA-SUBNET'
-  }
-}
 
 
 
@@ -41,6 +43,9 @@ resource hub_vnet 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
  resource vm_nic 'Microsoft.Network/networkInterfaces@2021-03-01' = {
    name: nicName
    location: location
+   extendedLocation: {
+  
+   }
    properties: {
      ipConfigurations: [
        {
@@ -56,4 +61,52 @@ resource hub_vnet 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
    }
  }
 
+
+
 // Create VM 
+resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
+  name: vmName
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vm_size
+    }
+    storageProfile: {
+      osDisk: {
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: os_disk_type
+        }
+      }
+      imageReference: {
+        sku: os_version
+        version: 'latest'
+        publisher: 'MicrosoftWindowsServer'
+        offer: 'WindowsServer'
+
+      }
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: vm_nic.id
+        }
+      ]
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: false
+      }
+    }
+    osProfile: {
+      adminPassword: adminPw
+      adminUsername: adminLogin
+      computerName: vmName
+
+    }
+  }
+  dependsOn: [
+    vm_nic
+  ]
+}
+

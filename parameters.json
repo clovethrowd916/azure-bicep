@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "adminLogin": {
+        "value": "pmanning"
+        
+      },
+      "adminPw": {
+        "reference": {
+          "keyVault": {
+            "id": "/subscriptions/1ba5c8d8-4d9e-453f-b8b3-4797d10e6697/resourceGroups/AZ-LAB-HUB-RG-KV/providers/Microsoft.KeyVault/vaults/azlab-kv-SC"
+          },
+          "secretName": "adminPassword"
+            
+        }
+      }
+      
+      
+    }
+  }
